@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Do You Love Me?</title>
+<style>
+    body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        margin: 0;
+        background: linear-gradient(135deg, #ffebf2, #ffe0f7);
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        overflow: hidden;
+    }
+    .container {
+        text-align: center;
+    }
+    .teddy-bear {
+        width: 300px;
+        height: auto;
+        animation: bounce 2s infinite alternate;
+    }
+    .message {
+        font-size: 28px;
+        color: #d63384;
+        text-shadow: 0 0 8px #ff69b4;
+        margin: 20px;
+        animation: fadeIn 2s;
+    }
+    .buttons {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+    }
+    button {
+        padding: 12px 25px;
+        font-size: 20px;
+        border: none;
+        cursor: pointer;
+        border-radius: 20px;
+        transition: 0.3s;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+    .yes {
+        background: #28a745;
+        color: white;
+    }
+    .yes:hover {
+        background: #218838;
+        transform: scale(1.1);
+    }
+    .no {
+        background: #dc3545;
+        color: white;
+        position: relative;
+    }
+    .no:hover {
+        transform: scale(1.1);
+    }
+    @keyframes bounce {
+        0% { transform: translateY(0); }
+        100% { transform: translateY(-10px); }
+    }
+    @keyframes fadeIn {
+        0% { opacity: 0; }
+        100% { opacity: 1; }
+    }
+    .hacking-sim {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: black;
+        color: limegreen;
+        font-family: 'Courier New', monospace;
+        font-size: 18px;
+        padding: 20px;
+        box-sizing: border-box;
+        overflow: hidden;
+        z-index: 9999;
+        animation: flicker 1s infinite alternate;
+    }
+    @keyframes flicker {
+        0% { opacity: 0.8; }
+        100% { opacity: 1; }
+    }
+</style>
+</head>
+<body>
+<div class="container">
+    <img src="https://media.giphy.com/media/3oriO0OEd9QIDdllqo/giphy.gif" alt="Cute Teddy Bear" class="teddy-bear">
+    <div class="message">Do you love me? 💕</div>
+    <div class="buttons">
+        <button class="yes" onclick="loveMessage()">Yes 💖</button>
+        <button class="no" onmouseover="escapeNo(this)">No 😢</button>
+    </div>
+</div>
+<div class="hacking-sim" id="hacking-sim">
+    <pre>
+Initializing... 
+Connecting to server... 
+Accessing files... 
+[ERROR] Unauthorized access detected! 
+Injecting payload... 
+HACK COMPLETE.
+    </pre>
+</div>
+<script>
+    function loveMessage() {
+        const msg = document.createElement('div');
+        msg.textContent = 'I love you too! 💕🌹';
+        msg.style.fontSize = '32px';
+        msg.style.color = '#28a745';
+        msg.style.marginTop = '20px';
+        document.querySelector('.container').appendChild(msg);
+    }
+    
+    function escapeNo(btn) {
+        const x = Math.random() * window.innerWidth - btn.offsetWidth;
+        const y = Math.random() * window.innerHeight - btn.offsetHeight;
+        btn.style.position = 'absolute';
+        btn.style.left = `${Math.max(0, x)}px`;
+        btn.style.top = `${Math.max(0, y)}px`;
+    }
+    
+    function startHackingSim() {
+        const sim = document.getElementById('hacking-sim');
+        sim.style.display = 'block';
+        setTimeout(() => {
+            alert('Just kidding! 💚 You are safe!');
+            sim.style.display = 'none';
+        }, 5000);
+    }
+</script>
+</body>
+</html>
