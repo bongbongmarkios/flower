@@ -13,90 +13,143 @@
         }
         body, html {
             height: 100vh;
+            background: #f5f5f5;
             display: flex;
             justify-content: center;
             align-items: center;
-            background: #f5f5f5;
+            transition: background 0.8s;
         }
         .container {
-            text-align: center;
-            padding: 40px;
+            max-width: 400px;
+            width: 100%;
+            padding: 20px;
             box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
             border-radius: 8px;
             background: #fff;
+            text-align: center;
+            animation: fadeIn 1s;
         }
-        .buttons {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 20px;
+        input, button {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
         }
         button {
-            padding: 10px 20px;
-            border: none;
+            background: #4caf50;
+            color: white;
             cursor: pointer;
             transition: 0.3s;
         }
-        .yes-btn {
-            background: #4caf50;
-            color: white;
-        }
-        .yes-btn:hover {
+        button:hover {
             background: #45a049;
         }
-        .no-btn {
-            background: #ff0000;
-            color: white;
+        .hidden {
+            display: none;
         }
-        .no-btn:hover {
-            background: #cc0000;
+        .love-page, .game-page {
+            display: none;
+        }
+        .love-page.show, .game-page.show {
+            display: block;
+        }
+        .buttons {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+        }
+        canvas {
+            border: 1px solid #ccc;
         }
     </style>
 </head>
 <body>
+<div class="container" id="login-container">
+    <h2>Login or Register</h2>
+    <input type="text" id="username" placeholder="Enter username" required>
+    <button onclick="register()">Register/Login</button>
+</div>
 
-<div class="container">
-    <h2 id="question">Do you love me?</h2>
+<div class="container love-page hidden" id="love-page">
+    <h2>Do you love me?</h2>
     <div class="buttons">
-        <button class="yes-btn" onclick="loveResponse()">Yes</button>
-        <button class="no-btn" onmouseover="escapeNoButton()" onclick="hackSimulation()">No</button>
+        <button onclick="loveResponse()">Yes</button>
+        <button class="no-btn" onclick="startGame()">No</button>
     </div>
 </div>
 
-<script>
-    let currentUser = localStorage.getItem('username') || 'Guest';
+<div class="container game-page hidden" id="game-page">
+    <h2>Catch the Square to Quit!</h2>
+    <canvas id="gameCanvas" width="400" height="400"></canvas>
+</div>
 
-    window.onload = () => {
-        const question = document.getElementById('question');
-        question.textContent = `Do you love me, ${currentUser}?`;
+<script>
+    let currentUser = '';
+
+    function register() {
+        const username = document.getElementById('username').value;
+        if (username.trim() !== '') {
+            currentUser = username;
+            localStorage.setItem('username', currentUser);
+            document.getElementById('login-container').classList.add('hidden');
+            document.getElementById('love-page').classList.remove('hidden');
+        } else {
+            alert('Please enter a valid username.');
+        }
+    }
+
+    window.onload = function () {
+        currentUser = localStorage.getItem('username');
+        if (currentUser) {
+            document.getElementById('login-container').classList.add('hidden');
+            document.getElementById('love-page').classList.remove('hidden');
+        }
     };
 
     function loveResponse() {
         alert(`I love you too, ${currentUser}! ❤️`);
     }
 
-    function escapeNoButton() {
-        const noBtn = document.querySelector('.no-btn');
-        const x = Math.floor(Math.random() * window.innerWidth - 100);
-        const y = Math.floor(Math.random() * window.innerHeight - 100);
-        noBtn.style.position = 'absolute';
-        noBtn.style.left = `${x}px`;
-        noBtn.style.top = `${y}px`;
-    }
+    function startGame() {
+        document.getElementById('love-page').classList.add('hidden');
+        document.getElementById('game-page').classList.add('show');
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        let squareSize = 40;
+        let x = Math.random() * (canvas.width - squareSize);
+        let y = Math.random() * (canvas.height - squareSize);
+        let speed = 4;
 
-    function hackSimulation() {
-        document.body.innerHTML = `
-            <div style="font-family: monospace; color: lime; background: black; height: 100vh; padding: 20px; overflow: auto; white-space: pre;">
-                <p>Initializing hack protocol...</p>
-                <p>Bypassing firewall...</p>
-                <p>Accessing secure server...</p>
-                <p>Injecting trojan...</p>
-                <p>Data breach successful!</p>
-                <p>Encrypting files...</p>
-                <p>Downloading sensitive data...</p>
-                <p>You have been hacked! 💀</p>
-            </div>`;
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+            if (
+                mouseX >= x && mouseX <= x + squareSize &&
+                mouseY >= y && mouseY <= y + squareSize
+            ) {
+                alert('You caught the square! You can quit now.');
+                document.getElementById('game-page').classList.remove('show');
+                document.getElementById('love-page').classList.add('show');
+            }
+        });
+
+        function drawSquare() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#4caf50';
+            ctx.fillRect(x, y, squareSize, squareSize);
+            x += (Math.random() - 0.5) * speed;
+            y += (Math.random() - 0.5) * speed;
+
+            if (x < 0 || x + squareSize > canvas.width) x = Math.random() * (canvas.width - squareSize);
+            if (y < 0 || y + squareSize > canvas.height) y = Math.random() * (canvas.height - squareSize);
+
+            requestAnimationFrame(drawSquare);
+        }
+
+        drawSquare();
     }
 </script>
-
 </body>
 </html>
