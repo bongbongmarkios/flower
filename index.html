@@ -3,167 +3,109 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Love App</title>
+    <title>User Registration and Login</title>
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
+        body {
             font-family: Arial, sans-serif;
-        }
-        body, html {
+            background: linear-gradient(135deg, #74EBD5, #ACB6E5);
             height: 100vh;
-            background: #f5f5f5;
+            margin: 0;
             display: flex;
             justify-content: center;
             align-items: center;
-            transition: background 0.8s;
+            color: #333;
         }
         .container {
-            max-width: 400px;
-            width: 100%;
-            padding: 20px;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
-            border-radius: 8px;
             background: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+            width: 350px;
             text-align: center;
-            animation: fadeIn 1s;
         }
-        input, button {
+        h2 {
+            margin-bottom: 20px;
+        }
+        input {
             width: 100%;
             padding: 10px;
             margin: 10px 0;
             border: 1px solid #ccc;
-            border-radius: 4px;
+            border-radius: 8px;
         }
         button {
-            background: #4caf50;
+            width: 100%;
+            padding: 10px;
+            background: #4CAF50;
             color: white;
+            border: none;
+            border-radius: 8px;
             cursor: pointer;
             transition: 0.3s;
         }
         button:hover {
             background: #45a049;
         }
-        .hidden {
-            display: none;
-        }
-        .love-page, .hack-page {
-            display: none;
-        }
-        .love-page.show, .hack-page.show {
-            display: block;
-        }
-        .buttons {
-            display: flex;
-            justify-content: space-around;
-            margin-top: 20px;
-        }
-        .no-btn {
-            position: relative;
-            transition: all 0.3s;
-        }
-        .hack-simulation {
-            font-family: monospace;
-            color: lime;
-            background: black;
-            height: 100vh;
-            padding: 20px;
-            overflow: auto;
-            white-space: pre;
-            animation: flicker 1.5s infinite alternate;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        @keyframes flicker {
-            0% { opacity: 0.8; }
-            100% { opacity: 1; }
+        .message {
+            margin-top: 15px;
+            color: red;
         }
     </style>
 </head>
 <body>
-<div class="container" id="login-container">
-    <h2>Login or Register</h2>
+
+<div class="container">
+    <h2>Sign In / Sign Up</h2>
     <input type="text" id="username" placeholder="Enter username" required>
-    <button onclick="register()">Register/Login</button>
-</div>
-
-<div class="container love-page hidden" id="love-page">
-    <h2>Do you love me?</h2>
-    <div class="buttons">
-        <button onclick="loveResponse()">Yes</button>
-        <button class="no-btn" onmouseover="escapeNoButton()" onclick="hackSimulation()">No</button>
-    </div>
-</div>
-
-<div class="hack-page hidden" id="hack-page">
-    <div class="hack-simulation" id="hack-output"></div>
+    <button onclick="signIn()">Sign In</button>
+    <button onclick="signUp()">Sign Up</button>
+    <p class="message" id="message"></p>
 </div>
 
 <script>
-    let currentUser = '';
+    // Sign In function
+    function signIn() {
+        const username = document.getElementById('username').value.trim();
+        const users = JSON.parse(localStorage.getItem('users')) || [];
 
-    function register() {
-        const username = document.getElementById('username').value;
-        if (username.trim() !== '') {
-            currentUser = username;
-            localStorage.setItem('username', currentUser);
-            window.location.href = 'love-app.html'; // Redirect to the app page
+        if (!username) {
+            displayMessage('Please enter a username.', 'red');
+            return;
+        }
+
+        if (users.includes(username)) {
+            displayMessage(`Welcome back, ${username}!`, 'green');
         } else {
-            alert('Please enter a valid username.');
+            displayMessage('Username not registered. Please sign up.', 'red');
         }
     }
 
-    window.onload = function () {
-        currentUser = localStorage.getItem('username');
-        if (currentUser) {
-            document.getElementById('login-container').classList.add('hidden');
-            document.getElementById('love-page').classList.remove('hidden');
-        }
-    };
+    // Sign Up function
+    function signUp() {
+        const username = document.getElementById('username').value.trim();
+        let users = JSON.parse(localStorage.getItem('users')) || [];
 
-    function loveResponse() {
-        alert(`I love you too, ${currentUser}! ❤️`);
-    }
-    
-    function escapeNoButton() {
-        const noBtn = document.querySelector('.no-btn');
-        const x = Math.floor(Math.random() * window.innerWidth - 100);
-        const y = Math.floor(Math.random() * window.innerHeight - 100);
-        noBtn.style.position = 'absolute';
-        noBtn.style.left = `${x}px`;
-        noBtn.style.top = `${y}px`;
+        if (!username) {
+            displayMessage('Please enter a username.', 'red');
+            return;
+        }
+
+        if (users.includes(username)) {
+            displayMessage('Username already exists. Try signing in.', 'red');
+        } else {
+            users.push(username);
+            localStorage.setItem('users', JSON.stringify(users));
+            displayMessage(`Account created successfully! Welcome, ${username}.`, 'green');
+        }
     }
 
-    function hackSimulation() {
-        document.body.style.background = 'black';
-        document.getElementById('love-page').classList.add('hidden');
-        document.getElementById('hack-page').classList.add('show');
-        const output = document.getElementById('hack-output');
-        
-        let lines = [
-            'Initializing hack protocol...\n',
-            'Bypassing firewall...\n',
-            'Accessing secure server...\n',
-            'Injecting trojan...\n',
-            'Data breach successful!\n',
-            'Encrypting files...\n',
-            'Downloading sensitive data...\n',
-            'You have been hacked! 💀'
-        ];
-        
-        let i = 0;
-        function displayLine() {
-            if (i < lines.length) {
-                output.innerHTML += lines[i];
-                i++;
-                setTimeout(displayLine, 1000);
-            }
-        }
-        displayLine();
+    // Display message function
+    function displayMessage(msg, color) {
+        const messageElement = document.getElementById('message');
+        messageElement.textContent = msg;
+        messageElement.style.color = color;
     }
 </script>
+
 </body>
 </html>
