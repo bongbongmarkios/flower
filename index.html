@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Registration and Login</title>
+    <title>iPhone-Style Auth App</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background: linear-gradient(135deg, #74EBD5, #ACB6E5);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: #f0f0f5;
             height: 100vh;
             margin: 0;
             display: flex;
@@ -17,93 +17,168 @@
         }
         .container {
             background: #fff;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
-            width: 350px;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            width: 380px;
             text-align: center;
         }
         h2 {
-            margin-bottom: 20px;
+            margin-bottom: 30px;
+            font-size: 28px;
+            color: #333;
         }
         input {
-            width: 100%;
-            padding: 10px;
+            width: calc(100% - 20px);
+            padding: 12px;
             margin: 10px 0;
             border: 1px solid #ccc;
-            border-radius: 8px;
+            border-radius: 12px;
+            font-size: 16px;
+            outline: none;
+            transition: 0.3s;
+        }
+        input:focus {
+            border-color: #007aff;
+            box-shadow: 0 0 8px rgba(0, 122, 255, 0.4);
         }
         button {
             width: 100%;
-            padding: 10px;
-            background: #4CAF50;
+            padding: 12px;
+            background: #007aff;
             color: white;
             border: none;
-            border-radius: 8px;
+            border-radius: 12px;
             cursor: pointer;
             transition: 0.3s;
+            font-size: 16px;
         }
         button:hover {
-            background: #45a049;
+            background: #005ecb;
+        }
+        .forgot-btn {
+            background: #34c759;
+            margin-top: 10px;
+        }
+        .forgot-btn:hover {
+            background: #28a745;
         }
         .message {
             margin-top: 15px;
             color: red;
+        }
+        .link {
+            color: #007aff;
+            text-decoration: none;
+            display: block;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+        .link:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>Sign In / Sign Up</h2>
-    <input type="text" id="username" placeholder="Enter username" required>
+    <h2>iPhone-Style Auth</h2>
+    <input type="text" id="username" placeholder="Username" required>
+    <input type="password" id="password" placeholder="Password" required>
+    <input type="password" id="confirmPassword" placeholder="Confirm Password" style="display:none;" required>
+    
     <button onclick="signIn()">Sign In</button>
     <button onclick="signUp()">Sign Up</button>
+    <button class="forgot-btn" onclick="forgotPassword()">Forgot Password</button>
+    
     <p class="message" id="message"></p>
+    <a href="#" class="link" onclick="toggleSignUp()">Need to create an account? Sign Up</a>
 </div>
 
 <script>
-    // Sign In function
-    function signIn() {
-        const username = document.getElementById('username').value.trim();
-        const users = JSON.parse(localStorage.getItem('users')) || [];
+    let isSignUp = false;
 
-        if (!username) {
-            displayMessage('Please enter a username.', 'red');
-            return;
-        }
-
-        if (users.includes(username)) {
-            displayMessage(`Welcome back, ${username}!`, 'green');
-        } else {
-            displayMessage('Username not registered. Please sign up.', 'red');
-        }
-    }
-
-    // Sign Up function
-    function signUp() {
-        const username = document.getElementById('username').value.trim();
-        let users = JSON.parse(localStorage.getItem('users')) || [];
-
-        if (!username) {
-            displayMessage('Please enter a username.', 'red');
-            return;
-        }
-
-        if (users.includes(username)) {
-            displayMessage('Username already exists. Try signing in.', 'red');
-        } else {
-            users.push(username);
-            localStorage.setItem('users', JSON.stringify(users));
-            displayMessage(`Account created successfully! Welcome, ${username}.`, 'green');
-        }
+    // Toggle between Sign In and Sign Up
+    function toggleSignUp() {
+        isSignUp = !isSignUp;
+        document.querySelector('h2').textContent = isSignUp ? "Create an Account" : "iPhone-Style Auth";
+        document.querySelector('.forgot-btn').style.display = isSignUp ? "none" : "block";
+        document.getElementById('confirmPassword').style.display = isSignUp ? "block" : "none";
+        document.querySelector('.link').textContent = isSignUp ? "Already have an account? Sign In" : "Need to create an account? Sign Up";
     }
 
     // Display message function
     function displayMessage(msg, color) {
-        const messageElement = document.getElementById('message');
-        messageElement.textContent = msg;
-        messageElement.style.color = color;
+        const message = document.getElementById('message');
+        message.textContent = msg;
+        message.style.color = color;
+    }
+
+    // Sign Up function with password confirmation
+    function signUp() {
+        const username = document.getElementById('username').value.trim();
+        const password = document.getElementById('password').value.trim();
+        const confirmPassword = document.getElementById('confirmPassword').value.trim();
+
+        if (!username || !password || !confirmPassword) {
+            displayMessage('Please fill in all fields.', 'red');
+            return;
+        }
+
+        if (password !== confirmPassword) {
+            displayMessage('Passwords do not match.', 'red');
+            return;
+        }
+
+        let users = JSON.parse(localStorage.getItem('users')) || {};
+
+        if (users[username]) {
+            displayMessage('Username already exists. Try signing in.', 'red');
+        } else {
+            users[username] = password;
+            localStorage.setItem('users', JSON.stringify(users));
+            displayMessage('Account created successfully! 🎉', 'green');
+            toggleSignUp();
+        }
+    }
+
+    // Sign In function
+    function signIn() {
+        const username = document.getElementById('username').value.trim();
+        const password = document.getElementById('password').value.trim();
+
+        if (!username || !password) {
+            displayMessage('Please enter both username and password.', 'red');
+            return;
+        }
+
+        let users = JSON.parse(localStorage.getItem('users')) || {};
+
+        if (users[username] && users[username] === password) {
+            displayMessage(`Welcome back, ${username}! ✅`, 'green');
+        } else {
+            displayMessage('Invalid username or password. ❌', 'red');
+        }
+    }
+
+    // Forgot Password function (simulates sending a code)
+    function forgotPassword() {
+        const username = document.getElementById('username').value.trim();
+
+        if (!username) {
+            displayMessage('Enter your username to recover password.', 'red');
+            return;
+        }
+
+        let users = JSON.parse(localStorage.getItem('users')) || {};
+
+        if (users[username]) {
+            const code = Math.floor(100000 + Math.random() * 900000); // 6-digit code
+            alert(`Password recovery code: ${code}`);
+            displayMessage('Recovery code sent to your device! 📱', 'green');
+        } else {
+            displayMessage('Username not found. ❌', 'red');
+        }
     }
 </script>
 
